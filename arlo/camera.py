@@ -1,6 +1,6 @@
 import json
 import socket
-from arlo.messages import *
+import arlo.messages
 
 class Camera:
     def __init__(self, address, registration):
@@ -27,9 +27,9 @@ class Camera:
                         print(f"Client {self.address} ACK")
 
     def enablePIR(self):
-        enablePIR = Message(REGISTER_SET_PIR_ARMED)
+        enablePIR = Message(messages.REGISTER_SET_PIR_ARMED)
         sendMessage(enablePIR)
 
     def setUserStreamActive(self):
-        userStreamActive = Message(REGISTER_SET_USER_STREAM_ACTIVE)
+        userStreamActive = Message((messages.REGISTER_SET_USER_STREAM_ACTIVE)
         sendMessage(userStreamActive)
