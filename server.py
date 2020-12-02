@@ -23,9 +23,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             connect.close()
 
             if (msg['Type'] == "registration"):
-                print(f"Registration from {client_address} - {msg['SystemSerialNumber']}")
                 print(msg)
                 camera = Camera(client_address[0], msg)
+                print(f"Registration from {client_address} - {msg['SystemSerialNumber']} - {camera.hostname}")
                 cameras[msg['SystemSerialNumber']] = camera
                 registerSet = Message(REGISTER_SET_INITIAL)
                 print("Sending registration")

@@ -7,6 +7,7 @@ class Camera:
         self.registration = registration
         self.address = address
         self.id = 0
+        self.hostname = f"{registration['SystemModelNumber']}-{registration['SystemSerialNumber'][-5:]}"
 
     def __getitem__(self,key):
         return self.registration[key]
