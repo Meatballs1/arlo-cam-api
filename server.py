@@ -16,8 +16,8 @@ class CameraThread(threading.Thread):
         self.port = port
     
     def run(self):
+        print(f"Connection from {self.ip}")
         while True:
-            print(f"Connection from {self.ip}")
             data = self.connection.recv(1024)
             if len(data) > 0:
                 msg = Message.fromNetworkMessage(data.decode(encoding="utf-8"))
@@ -39,6 +39,8 @@ class CameraThread(threading.Thread):
                     camera.sendMessage(registerSet)
                 elif (msg['Type'] == "status"):
                     print(f"Status from {ip} - {msg['SystemSerialNumber']}")
+                elif (msg['Type'] == "pirMotionAlert"):
+                    print("PIR Motion Alert")
                 break
 
 threads = []
