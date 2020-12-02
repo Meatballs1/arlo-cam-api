@@ -1,6 +1,7 @@
 import socket
 import sys
 import json
+from arlo.messages import Message
 import arlo.messages
 from arlo.camera import Camera
 
@@ -17,7 +18,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             print(f"Connection from {client_address}")
             data = connect.recv(1024)
             msg = Message.fromNetworkMessage(data.decode(encoding="utf-8"))
-            ack = Message(messages.RESPONSE)
+            ack = Message(arlo.messages.RESPONSE)
             ack['ID'] = msg['ID']
             connect.sendall(ack.toNetworkMessage())
             connect.close()
@@ -27,7 +28,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 camera = Camera(client_address[0], msg)
                 print(f"Registration from {client_address} - {msg['SystemSerialNumber']} - {camera.hostname}")
                 cameras[msg['SystemSerialNumber']] = camera
-                registerSet = Message(messages.REGISTER_SET_INITIAL)
+                registerSet = Message(arlo.messages.REGISTER_SET_INITIAL)
                 print("Sending initial register set")
                 camera.sendMessage(registerSet)
             elif (msg['Type'] == "status"):
