@@ -16,16 +16,29 @@ class Message:
         final = f"L:{length} {msgJson}"
         return str.encode(final)
 
+    def toJSON(self):
+        return json.dumps(self.dictionary,separators=(',', ':'))
+
+    def __repr__(self):
+        return json.dumps(self.dictionary,separators=(',', ':'))
+
     def __str__(self):
         return json.dumps(self.dictionary, indent=4) 
+
+    @staticmethod
+    def from_json(json_data):
+        if (json_data is not None and json_data != "None"):
+            return Message(json.loads(json_data))
+        else:
+            return None
 
     @staticmethod
     def fromNetworkMessage(data):
         if data.startswith("L:"):
             delimiter = data.index(" ")
             dataLength = int(data[2:delimiter])
-            jsonData = data[delimiter+1:delimiter+1+dataLength]
-            return Message(json.loads(jsonData))
+            json_data = data[delimiter+1:delimiter+1+dataLength]
+            return Message(json.loads(json_data))
         else:
             return None
 
@@ -185,24 +198,27 @@ RA_PARAMS = {
             }
         }
 
+#  Destination URL includes serial number
+# Camera will POST with a multipart form containing file parameter.
+# Will not include temp.jpg in URL
 SNAPSHOT = {
         "Type":"fullSnapshot",
-        "ID":31,
-        "DestinationURL":"http://172.14.1.1/snapshot/52M1837WAC3DC_d293116d/temp.jpg"
+        "ID":-1,
+        "DestinationURL":"http://172.14.1.1/snapshot/YOURSERIAL_d293116d/temp.jpg"
         }
 
 REGISTER_SET_USER_STREAM_ACTIVE = {
         "Type":"registerSet",
-        "ID":20,
+        "ID":-1,
         "SetValues":{
-            "UserStreamActive":1  # 1 Active 0 Disabled
+            "UserStreamActive":0  # 0 Active 1 Disabled
             }
         }
 
 #Enable/Disable motion sensitivity
 REGISTER_SET_PIR = {
         "Type":"registerSet",
-        "ID":26,
+        "ID":-1,
         "SetValues":{
             "PIREnableLED":True,
             "PIRLEDSensitivity":80
