@@ -34,14 +34,14 @@ class CameraThread(threading.Thread):
                     camera.persist()
                     s_print(f"<[{self.ip}][{msg['ID']}] Registration from {msg['SystemSerialNumber']} - {camera.hostname}")
                     registerSet = Message(arlo.messages.REGISTER_SET_INITIAL)
-                    camera.sendMessage(registerSet)
+                    camera.send_message(registerSet)
                 elif (msg['Type'] == "status"):
                     s_print(f"<[{self.ip}][{msg['ID']}] Status from {msg['SystemSerialNumber']}")
                     camera = Camera.from_db_serial(msg['SystemSerialNumber'])
                     camera.update_status(msg)
                     camera.persist()
-                elif (msg['Type'] == "pirMotionAlert"):
-                    s_print(f"<[{self.ip}][{msg['ID']}] PIR motion alert")
+                elif (msg['Type'] == "alert"):
+                    s_print(f"<[{self.ip}][{msg['ID']}] {msg['AlertType']}")
                 else:
                     s_print(f"<[{self.ip}][{msg['ID']}] Unknown message")
                     s_print(msg)
@@ -53,23 +53,36 @@ class CameraThread(threading.Thread):
                 self.connection.close()
                 break
 
-threads = []
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_address = ('', 4000)
-    sock.bind(server_address)
 
-    sock.listen(12)
-    while True:
-        try:
-            (connection, (ip, port)) = sock.accept()
-            newthread = CameraThread(connection,ip,port)
-            newthread.start()
-            threads.append(newthread)
-        except KeyboardInterrupt as ki:
-            break
-        except Exception as e:
-            print(e)
+class ServerThread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
 
-for t in threads:
-    t.join()
+    def run(self):
+        threads = []
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server_address = ('', 4000)
+            sock.bind(server_address)
+
+            sock.listen(12)
+            while True:
+                try:
+                    (connection, (ip, port)) = sock.accept()
+                    newthread = CameraThread(connection,ip,port)
+                    threads.append(newthread)
+                    newthread.start()
+                except KeyboardInterrupt as ki:
+                    break
+                except Exception as e:
+                    print(e)
+
+        for t in threads:
+            t.join()
+
+
+server_thread = ServerThread()
+server_thread.start()
+flask_thread = api.api.get_thread()
+server_thread.join()
+flask_thread.join()

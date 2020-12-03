@@ -1,0 +1,243 @@
+{
+	"info": {
+		"_postman_id": "ccf05e5f-96ee-4ded-9f2f-6a165f5352c4",
+		"name": "ArloAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List Cameras",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/camera",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Camera set UserStreamActive",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"active\":1}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/userstreamactive",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"userstreamactive"
+					]
+				},
+				"description": "Appears to be called when the user requests a stream from the mobile app - but the camera doesn't appear to do anything?\n\nSet to 0 when the user starts streaming, and 1 when they stop."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera status request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/statusrequest",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"statusrequest"
+					]
+				},
+				"description": "Request the camera to send a status update."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Arm",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"PIRTargetState\":\"Disarmed\",\"VideoMotionEstimationEnable\":false,\"AudioTargetState\":\"Disarmed\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/arm",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"arm"
+					]
+				},
+				"description": "Its unclear what VideoMotionEstimationEnable does - it doesn't appear to do anything on its own."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera PIR LED",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"enabled\":false,\"sensitivity\":80}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/pirled",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"pirled"
+					]
+				},
+				"description": "Causes an amber LED to flash when the PIR sensor is triggered. Does not activate camera alerts."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Set Quality",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"quality\":\"high\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/quality",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"quality"
+					]
+				},
+				"description": "Set to high, medium, or low presets."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Request Snapshot",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"url\":\"http://172.14.1.1:5000/snapshot/blah/temp.jpg\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/snapshot",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"snapshot"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d6bacf95-bac4-44b3-90a5-7a52a9477f6b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "c0d8ad19-5ec5-4aba-9eb6-b6d6856b7355",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "c661b799-8aed-4ff2-9ad3-ea07f5dd0f74",
+			"key": "base_url",
+			"value": "http://localhost:5000"
+		},
+		{
+			"id": "daf34ede-53b1-4aff-9c0b-4b6a5048a677",
+			"key": "serial_number",
+			"value": "x"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
