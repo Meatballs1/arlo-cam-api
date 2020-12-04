@@ -71,7 +71,7 @@ class ConnectionThread(threading.Thread):
                     alert_type = msg['AlertType']
                     s_print(f"<[{self.ip}][{msg['ID']}] {msg['AlertType']}")
                     if alert_type == "pirMotionAlert":
-                       filename = f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_motion.mpg",
+                       filename = f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_motion.mpg"
                        recorder = Recorder(self.ip, filename, MOTION_RECORDING_TIMEOUT)
                        with recorder_lock:
                            if self.ip in recorders:
