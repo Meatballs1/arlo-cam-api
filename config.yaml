@@ -1,0 +1,8 @@
+MotionRecordingTimeout: 120
+AudioRecordingTimeout: 10
+RecordingBasePath: "/tmp/"
+MotionRecordingWebHookUrl: "http://httpbin.org/anything"
+AudioRecordingWebHookUrl: "http://httpbin.org/anything"
+UserRecordingWebHookUrl: "http://httpbin.org/anything"
+StatusUpdateWebHookUrl: "http://httpbin.org/anything"
+RegistrationWebHookUrl: "http://httpbin.org/anything"

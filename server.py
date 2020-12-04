@@ -3,13 +3,21 @@ import sys
 import json
 import threading
 import sqlite3
+import time
+import yaml
+
 from arlo.messages import Message
 import arlo.messages
 from arlo.camera import Camera
 from helpers.safe_print import s_print
 from helpers.recorder import Recorder
+from helpers.webhook_manager import WebHookManager
 import api.api
-import time
+
+with open(r'config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+
+webhook_manager = WebHookManager(config)
 
 with sqlite3.connect('arlo.db') as conn:
     c = conn.cursor()
@@ -23,11 +31,12 @@ with sqlite3.connect('arlo.db') as conn:
 recorder_lock = threading.Lock()
 recorders = {}
 
-MOTION_RECORDING_TIMEOUT=300
-AUDIO_RECORDING_TIMEOUT=20
-RECORDING_BASE_PATH="/tmp/"
 
-class CameraThread(threading.Thread):
+MOTION_RECORDING_TIMEOUT=config['MotionRecordingTimeout']
+AUDIO_RECORDING_TIMEOUT=config['AudioRecordingTimeout']
+RECORDING_BASE_PATH=config['RecordingBasePath']
+
+class ConnectionThread(threading.Thread):
     def __init__(self,connection,ip,port):
         threading.Thread.__init__(self)
         self.connection = connection
@@ -62,12 +71,14 @@ class CameraThread(threading.Thread):
                     alert_type = msg['AlertType']
                     s_print(f"<[{self.ip}][{msg['ID']}] {msg['AlertType']}")
                     if alert_type == "pirMotionAlert":
-                       recorder = Recorder(self.ip, f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_motion.mpg", MOTION_RECORDING_TIMEOUT)
+                       filename = f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_motion.mpg",
+                       recorder = Recorder(self.ip, filename, MOTION_RECORDING_TIMEOUT)
                        with recorder_lock:
                            if self.ip in recorders:
                                recorder[self.ip].stop()
                            recorders[self.ip] = recorder
                        recorder.run()
+                       webhook_manager.motion_detected(camera.ip,camera.friendly_name,camera.hostname,camera.serial_number,msg['PIRMotion']['zones'],filename)
                     elif alert_type == "audioAlert":
                        recorder = Recorder(self.ip, f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_audio.mpg", AUDIO_RECORDING_TIMEOUT)
                        with recorder_lock:
@@ -105,9 +116,9 @@ class ServerThread(threading.Thread):
             while True:
                 try:
                     (connection, (ip, port)) = sock.accept()
-                    newthread = CameraThread(connection,ip,port)
-                    threads.append(newthread)
-                    newthread.start()
+                    new_thread = ConnectionThread(connection,ip,port)
+                    threads.append(new_thread)
+                    new_thread.start()
                 except KeyboardInterrupt as ki:
                     break
                 except Exception as e:
