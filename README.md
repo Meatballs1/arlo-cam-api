@@ -51,3 +51,6 @@ ffmpeg -f alsa -channels 1 -i hw:1  -ar 8000 -sample_fmt s16 -ac 1 -f rtp rtp://
 ```
 
 Where hw:1 matches source input hardware device etc
+
+
+Sending audio whilst the camera is streaming appears to kill audio...

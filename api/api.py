@@ -42,8 +42,8 @@ def list():
         cameras = []
         if rows is not None:
             for row in rows:
-                (ip,serial_number,hostname,registration,status) = row
-                cameras.append({"ip":ip,"hostname":hostname,"serial_number":serial_number})
+                (ip,serial_number,hostname,registration,status,friendly_name) = row
+                cameras.append({"ip":ip,"hostname":hostname,"serial_number":serial_number,"friendly_name":friendly_name})
 
         return flask.jsonify(cameras)
 
@@ -109,6 +109,44 @@ def request_snapshot(serial):
         result = g.camera.snapshot_request(g.args['url'])
         return flask.jsonify({"result":result})
 
+@app.route('/camera/<serial>/audiomic', methods=['POST'])
+@validate_camera_request()
+def request_mic(serial):
+    if g.args['enabled'] is None:
+        flask.abort(400)
+    else:
+        result = g.camera.mic_request(g.args['enabled'])
+        return flask.jsonify({"result":result})
+
+@app.route('/camera/<serial>/audiospeaker', methods=['POST'])
+@validate_camera_request()
+def request_speaker(serial):
+    if g.args['enabled'] is None:
+        flask.abort(400)
+    else:
+        result = g.camera.speaker_request(g.args['enabled'])
+        return flask.jsonify({"result":result})
+
+@app.route('/camera/<serial>/record', methods=['POST'])
+@validate_camera_request()
+def request_record(serial):
+    if g.args['duration'] is None:
+        flask.abort(400)
+    else:
+        result = g.camera.record(g.args['duration'])
+        return flask.jsonify({"result":result})
+
+@app.route('/camera/<serial>/friendlyname', methods=['POST'])
+@validate_camera_request()
+def set_friendlyname(serial):
+    if g.args['name'] is None:
+        flask.abort(400)
+    else:
+        g.camera.friendly_name = g.args['name']
+        g.camera.persist()
+
+        return flask.jsonify({"result":True})
+
 @app.route('/camera/<serial>/activityzones', methods=['POST','DELETE'])
 @validate_camera_request()
 def set_activity_zones(serial):
@@ -136,6 +174,7 @@ def receive_snapshot(identifier):
             else:
                 file.save(target_path)
             return ""
+
 
 def get_thread():
     return threading.Thread(target=app.run(host='0.0.0.0'))

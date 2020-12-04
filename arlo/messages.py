@@ -488,8 +488,7 @@ REGISTER_SET_USER_STREAM_ACTIVE = {
 REGISTER_SET = {
         "Type":"registerSet",
         "ID":-1,
-        "SetValues":{
-            }
+        "SetValues":{}
         }
 
 #Enable/Disable motion sensitivity

@@ -1,10 +1,12 @@
 import json
 import socket
 import sqlite3
+import time
 
 from arlo.messages import Message
 import arlo.messages
 from helpers.safe_print import s_print
+from helpers.recorder import Recorder
 
 class Camera:
     def __init__(self, ip, registration):
@@ -14,6 +16,7 @@ class Camera:
         self.serial_number = registration["SystemSerialNumber"]
         self.hostname = f"{registration['SystemModelNumber']}-{self.serial_number[-5:]}"
         self.status = {}
+        self.friendly_name = self.serial_number
 
     def __getitem__(self,key):
         return self.registration[key]
@@ -42,13 +45,12 @@ class Camera:
             finally:
                 return result
 
-    def update_status(self,status):
-        self.status = status
-
     def persist(self):
         with sqlite3.connect('arlo.db') as conn:
             c = conn.cursor()
-            c.execute("REPLACE INTO camera VALUES (?,?,?,?,?)", (self.ip, self.serial_number, self.hostname, repr(self.registration), repr(self.status)))
+            # Remove the IP for any redundant camera that has the same IP...
+            c.execute("UPDATE camera SET ip = 'UNKNOWN' WHERE ip = ? AND serialnumber <> ?", (self.ip, self.serial_number))
+            c.execute("REPLACE INTO camera VALUES (?,?,?,?,?,?)", (self.ip, self.serial_number, self.hostname, repr(self.registration), repr(self.status), self.friendly_name))
             conn.commit()
 
     def pir_led(self,args):
@@ -119,18 +121,48 @@ class Camera:
         _snapshot_request['DestinationURL'] = url
         return self.send_message(_snapshot_request)
 
+    def mic_request(self, enabled):
+        register_set = Message(arlo.messages.REGISTER_SET)
+        register_set['AudioMicEnable'] = enabled
+        return self.send_message(register_set)
+
+    def speaker_request(self, enabled):
+        register_set = Message(arlo.messages.REGISTER_SET)
+        register_set['AudioSpkrEnable'] = enabled
+        return self.send_message(register_set)
+
+    def record(self, duration):
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        path = f"/tmp/{self.serial_number}{timestr}-user.mpg", duration
+        recorder = Recorder(self.ip, f"/tmp/{self.serial_number}_{timestr}_user.mpg", duration)
+        recorder.run()
+        return path
+
     @staticmethod
     def from_db_serial(serial):
         with sqlite3.connect('arlo.db') as conn:
             c = conn.cursor()
-            c.execute("SELECT * FROM camera WHERE serial = ?", (serial,))
+            c.execute("SELECT * FROM camera WHERE serialnumber = ?", (serial,))
             result = c.fetchone()
-            if result is not None:
-                (ip,serial_number,hostname,registration,status) = result
-                _registration = Message.from_json(registration)
-                cam = Camera(ip,_registration)
-                _status = Message.from_json(status)
-                cam.update_status(_status)
-                return cam
-            else:
-                return None
+            return Camera.from_db_row(result)
+
+    @staticmethod
+    def from_db_ip(ip):
+        with sqlite3.connect('arlo.db') as conn:
+            c = conn.cursor()
+            c.execute("SELECT * FROM camera WHERE ip = ?", (ip,))
+            result = c.fetchone()
+            return Camera.from_db_row(result)
+
+    @staticmethod
+    def from_db_row(row):
+        if row is not None:
+            (ip,serial_number,hostname,registration,status,friendly_name) = row
+            _registration = Message.from_json(registration)
+            cam = Camera(ip,_registration)
+            cam.status = Message.from_json(status)
+            cam.friendly_name = friendly_name
+            return cam
+        else:
+            return None
+

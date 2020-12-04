@@ -23,49 +23,21 @@
 			"response": []
 		},
 		{
-			"name": "Camera Status",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/camera/{{serial_number}}",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"camera",
-						"{{serial_number}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Camera set UserStreamActive",
+			"name": "Camera set friendlyname",
 			"request": {
 				"method": "POST",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"active\":1}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "{{base_url}}/camera/{{serial_number}}/userstreamactive",
+					"raw": "{{base_url}}/camera/{{serial_number}}/statusrequest",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"camera",
 						"{{serial_number}}",
-						"userstreamactive"
+						"statusrequest"
 					]
-				},
-				"description": "Appears to be called when the user requests a stream from the mobile app - but the camera doesn't appear to do anything?\n\nSet to 0 when the user starts streaming, and 1 when they stop."
+				}
 			},
 			"response": []
 		},
@@ -86,6 +58,130 @@
 					]
 				},
 				"description": "Request the camera to send a status update."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Registration",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/registration",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"registration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Camera set UserStreamActive",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"active\":0}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/userstreamactive",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"userstreamactive"
+					]
+				},
+				"description": "Appears to be called when the user requests a stream from the mobile app.\n\nSet to 1 after the user starts streaming, and 0 when they stop."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Audio Mic",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"enabled\":true}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/audiomic",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"audiomic"
+					]
+				},
+				"description": "Doesn't appear to prevent audio recordings?"
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Audio Speaker",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"enabled\":true}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/audiospeaker",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"audiospeaker"
+					]
+				},
+				"description": "Doesn't prevent audio transmissions?"
 			},
 			"response": []
 		},
@@ -172,7 +268,65 @@
 						"quality"
 					]
 				},
-				"description": "Set to high, medium, or low presets."
+				"description": "Set to high, medium, low or subscription presets."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Set Activity Zones",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{stuff}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/activityzones",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"activityzones"
+					]
+				},
+				"description": "Can set up to 3 activity zones..."
+			},
+			"response": []
+		},
+		{
+			"name": "Camera Unset Activity Zones",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/activityzones",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"activityzones"
+					]
+				},
+				"description": "Removes all activity zones."
 			},
 			"response": []
 		},
@@ -203,6 +357,34 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Camera Request Record",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"duration\":10}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/camera/{{serial_number}}/record",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"camera",
+						"{{serial_number}}",
+						"record"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -229,14 +411,14 @@
 	],
 	"variable": [
 		{
-			"id": "c661b799-8aed-4ff2-9ad3-ea07f5dd0f74",
+			"id": "22f284c3-aa17-49d4-a8d7-f5de49ca86fa",
 			"key": "base_url",
 			"value": "http://localhost:5000"
 		},
 		{
-			"id": "daf34ede-53b1-4aff-9c0b-4b6a5048a677",
+			"id": "ea117322-3d44-45cc-8178-53c0ed80f22c",
 			"key": "serial_number",
-			"value": "x"
+			"value": "test"
 		}
 	],
 	"protocolProfileBehavior": {}
