@@ -1,12 +1,14 @@
 import vlc
 import threading
+import time
 
 class Recorder:
-    def __init__(self, ip, file_path):
+    def __init__(self, ip, file_path, timeout):
         self.ip = ip
         self.file_path = file_path
         self.stopped = False
         self.thread = None
+        self.timeout = timeout
 
     def record_thread(self):
         args = f"sout=file/ts:{self.file_path}"
@@ -18,7 +20,12 @@ class Recorder:
         player.set_media(media)
         player.play()
 
+        start_time = time.time()
         while not self.stopped:
+            if (timeout > 0):
+                if ((time.time()-start_time)>=timeout):
+                    self.stopped = True
+            time.sleep(0.1)
             continue
 
         player.stop()

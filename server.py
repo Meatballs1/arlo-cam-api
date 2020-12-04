@@ -54,8 +54,11 @@ class CameraThread(threading.Thread):
                     ## TODO More logic around if a recorder has already started. Also should timeout recorder
                     if alert_type == "pirMotionAlert":
                        s_print(f"RECORDING")
-                       recorder = Recorder(self.ip, f"/tmp/{self.ip}{timestr}.mpg")
+                       recorder = Recorder(self.ip, f"/tmp/{self.ip}{timestr}.mpg", TIMEOUT)
                        with recorder_lock:
+                           if self.ip in recorders:
+                               s_print("Stopping existing recording")
+                               recorder[self.ip].stop()
                            recorders[self.ip] = recorder
                        recorder.run()
                     elif alert_type == "motionTimeoutAlert":
