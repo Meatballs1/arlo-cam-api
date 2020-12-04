@@ -47,4 +47,7 @@ Audio: pcm_mulaw, 8000 Hz, mono, s16, 64 kb/s
 
 ```
 ffmpeg -re -i piano2.wav  -ar 8000 -sample_fmt s16 -ac 1 -f rtp rtp://172.14.1.194:5000
+ffmpeg -f alsa -channels 1 -i hw:1  -ar 8000 -sample_fmt s16 -ac 1 -f rtp rtp://172.14.1.194:5000
 ```
+
+Where hw:1 matches source input hardware device etc
