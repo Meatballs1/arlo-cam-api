@@ -13,7 +13,7 @@ class Camera:
         self.id = 0
         self.serial_number = registration["SystemSerialNumber"]
         self.hostname = f"{registration['SystemModelNumber']}-{self.serial_number[-5:]}"
-        self.status = None
+        self.status = {}
 
     def __getitem__(self,key):
         return self.registration[key]
@@ -63,6 +63,15 @@ class Camera:
 
         return self.send_message(register_set)
 
+    def set_activity_zones(self,args):
+        activity_zones = Message(arlo.messages.ACTIVITY_ZONE_ALL)
+        # TODO:Set The Co-ordinates  
+        return self.send_message(activity_zones)
+
+    def unset_activity_zones(self,args):
+        activity_zones = Message(arlo.messages.ACTIVITY_ZONE_DELETE)
+        return self.send_message(activity_zones)
+
     def set_quality(self,args):
         quality = args["quality"].lower()
         if quality == "low":
@@ -71,6 +80,8 @@ class Camera:
             ra_params = Message(arlo.messages.RA_PARAMS_MEDIUM_QUALITY)
         elif quality == "high":
             ra_params = Message(arlo.messages.RA_PARAMS_HIGH_QUALITY)
+        elif quality == "subscription":
+            ra_params = Message(arlo.messages.RA_PARAMS_SUBSCRIPTION_QUALITY)
         else:
             return False
 

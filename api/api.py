@@ -55,6 +55,14 @@ def status(serial):
     else:
         return flask.jsonify(g.camera.status.dictionary)
 
+@app.route('/camera/<serial>/registration', methods=['GET'])
+@validate_camera_request(body_required=False)
+def registration(serial):
+    if g.camera.registration is None:
+        return flask.jsonify({})
+    else:
+        return flask.jsonify(g.camera.registration.dictionary)
+
 @app.route('/camera/<serial>/statusrequest', methods=['POST'])
 @validate_camera_request(body_required=False)
 def status_request(serial):
@@ -100,6 +108,16 @@ def request_snapshot(serial):
     else:
         result = g.camera.snapshot_request(g.args['url'])
         return flask.jsonify({"result":result})
+
+@app.route('/camera/<serial>/activityzones', methods=['POST','DELETE'])
+@validate_camera_request()
+def set_activity_zones(serial):
+    if flask.request.method == 'DELETE':
+        result = g.camera.unset_activity_zones()
+    else:
+        result = g.camera.set_activity_zones(g.args)
+
+    return flask.jsonify({"result":result})
 
 @app.route('/snapshot/<identifier>/', methods=['POST'])
 def receive_snapshot(identifier):

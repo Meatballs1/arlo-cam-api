@@ -147,6 +147,55 @@ ALERT = {
             "z3Counter":0
             }
         }
+# FROM CAMERA - SMART ENABLED?
+ALERT_SMART = {
+        "Type":"alert",
+        "ID":-1,
+        "AlertType":"pirMotionAlert",
+        "PIRMotion":{
+            "Triggered":True,
+            "TriggerLevel":0,
+            "TriggerRtpTime":0,
+            "TriggerSysTime":2857,
+            "zones":[],
+            "MdZones":1,
+            "MdPrevZones":0,
+            "PirTrigger":2,
+            "z0Intensity":40,
+            "z0Counter":320,
+            "z1Intensity":0,
+            "z1Counter":0,
+            "z2Intensity":0,
+            "z2Counter":0,
+            "z3Intensity":0,
+            "z3Counter":0
+            }
+        }
+
+#FROM CAMERA - ZONE ALERT?
+ALERT_ZONE = {
+        "Type":"alert",
+        "ID":-1,
+        "AlertType":"pirMotionAlert",
+        "PIRMotion":{
+            "Triggered":True,
+            "TriggerLevel":0,
+            "TriggerRtpTime":0,
+            "TriggerSysTime":1823,
+            "zones":["3cfe3b01-944d-422a-9f99-34c130d23299","b44327ff-c1c4-4208-a890-f1de0c8b5192"],
+            "MdZones":7, # Motion Detection Zones?
+            "MdPrevZones":0,
+            "PirTrigger":1,
+            "z0Intensity":100, #Zone 0 all zones?
+            "z0Counter":960,
+            "z1Intensity":100, #Zone 1
+            "z1Counter":896,
+            "z2Intensity":24, # Zone2 etc
+            "z2Counter":192,
+            "z3Intensity":0,
+            "z3Counter":0
+            }
+        }
 
 #FROM CAMERA
 ALERT_TIMEOUT = {
@@ -177,7 +226,74 @@ ALERT_AUDIO_TIMEOUT = {
         "StreamDuration":10
         }
 
+CAMERA_AUDIO_VOLUME = {
+        "Type":"registerSet",
+        "ID":-1,
+        "SetValues":{
+            "AudioSpkrVolume":0 #0 is 85%, 4=100%, -62=0%
+            }
+        }
+
+CAMERA_SPEAKER = {
+        "Type":"registerSet",
+        "ID":-1,
+        "SetValues":{
+            "AudioSpkrEnable":False
+            }
+        }
+
+CAMERA_MIC = {
+        "Type":"registerSet",
+        "ID":-1,
+        "SetValues":{
+            "AudioMicEnable":False
+            }
+        }
+
 STATUS_REQUEST = {"Type":"statusRequest","ID":19}
+
+RA_PARAMS_OFF_QUALITY = {
+        "Type":"raParams",
+        "ID":-1,
+        "Params":{
+            "1080p":{
+                "minbps":102400,
+                "maxbps":1228800,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":1024000,
+                "cbrbps":1024000
+                },
+            "360p":{
+                "minbps":51200,
+                "maxbps":512000,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":409600,
+                "cbrbps":409600
+                },
+            "480p":{
+                "minbps":51200,
+                "maxbps":614400,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":512000,
+                "cbrbps":512000
+                },
+            "720p":{
+                "minbps":51200,
+                "maxbps":1024000,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":768000,
+                "cbrbps":768000
+                }
+            }
+        }
 
 RA_PARAMS_LOW_QUALITY = {
         "Type":"raParams",
@@ -308,6 +424,49 @@ RA_PARAMS_HIGH_QUALITY = {
             }
         }
 
+RA_PARAMS_SUBSCRIPTION_QUALITY = {
+        "Type":"raParams",
+        "ID":-1,
+        "Params":{
+            "1080p":{
+                "minbps":102400,
+                "maxbps":1228800,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":1024000,
+                "cbrbps":1024000
+                },
+            "360p":{
+                "minbps":51200,
+                "maxbps":512000,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":409600,
+                "cbrbps":409600
+                },
+            "480p":{
+                "minbps":51200,
+                "maxbps":614400,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":512000,
+                "cbrbps":512000
+                },
+            "720p":{
+                "minbps":51200,
+                "maxbps":1024000,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":768000,
+                "cbrbps":768000
+                }
+            }
+        }
+
 #  Destination URL includes serial number
 # Camera will POST with a multipart form containing file parameter.
 # Will not include temp.jpg in URL
@@ -366,6 +525,20 @@ REGISTER_SET_DISARMED = {
             "DefaultMotionStreamTimeLimit":10
             }
         }
+REGISTER_SET_ARM_AUDIO = {
+        "Type":"registerSet",
+        "ID":12,
+        "SetValues":{
+            "PIRTargetState":"Armed",
+            "PIRStartSensitivity":80,
+            "PIRAction":"Stream",
+            "AudioTargetState":"Armed",
+            "AudioStartSensitivity":2,
+            "AudioAction":"Stream",
+            "VideoMotionEstimationEnable":True,
+            "VideoMotionSensitivity":80
+            }
+        }
 
 REGISTER_SET_INITIAL = {
         "Type":"registerSet",
@@ -390,13 +563,13 @@ REGISTER_SET_INITIAL = {
                 "MaxMotionStreamTimeLimit":120,
                 "VideoMode":"superWide",
                 "JPEGOutputResolution":"",
-                "ChargeNotificationLed":0,
+                "ChargeNotificationLed":0, # Battery Fully Charged Indicator
                 "AudioMicAGC":0,
                 "VideoOutputResolution":"1080p",
-                "VideoTargetBitrate":600,
+                "VideoTargetBitrate":1000, #600 originally
                 "Audio0EncodeFormat":0,
                 "Audio1EncodeFormat":1,
-                "ArloSmart":True,
+                "ArloSmart":True, # False originally
                 "AlertBackoffTime":0,
                 "PIRTargetState":"Disarmed",
                 "AudioTargetState":"Disarmed",
@@ -405,8 +578,117 @@ REGISTER_SET_INITIAL = {
                 }
         }
 
+REGISTER_SET_INITIAL_SUBSCRIPTION = {
+        "Type":"registerSet",
+        "ID":-1,
+        "SetValues":{
+            "VideoExposureCompensation":0,
+            "VideoMirror":False,
+            "VideoFlip":False,
+            "VideoWindowStartX":0,
+            "VideoWindowStartY":0,
+            "VideoWindowEndX":1274,
+            "VideoWindowEndY":718,
+            "MaxMissedBeaconTime":10,
+            "MaxStreamTimeLimit":1800,
+            "VideoAntiFlickerRate":50,
+            "WifiCountryCode":"EU",
+            "NightVisionMode":True,
+            "HdrControl":"off",
+            "MaxUserStreamTimeLimit":1800,
+            "MaxMotionStreamTimeLimit":120,
+            "VideoMode":"superWide",
+            "JPEGOutputResolution":"",
+            "ChargeNotificationLed":0,
+            "AudioMicAGC":0,
+            "VideoOutputResolution":"1080p",
+            "VideoTargetBitrate":1000,
+            "Audio0EncodeFormat":0,
+            "Audio1EncodeFormat":1,
+            "ArloSmart":True,
+            "AlertBackoffTime":0
+            }
+        }
+
+REGISTER_SET_TURNED_OFF = {
+        "Type":"registerSet",
+        "ID":-1,
+        "SetValues":{
+            "VideoExposureCompensation":0,
+            "VideoMirror":False,
+            "VideoFlip":False,
+            "VideoWindowStartX":0,
+            "VideoWindowStartY":0,
+            "VideoWindowEndX":1274,
+            "VideoWindowEndY":718,
+            "MaxMissedBeaconTime":10,
+            "MaxStreamTimeLimit":1800,
+            "VideoAntiFlickerRate":50,
+            "WifiCountryCode":"EU",
+            "NightVisionMode":True,
+            "IRLedState":"off",
+            "IRCutState":"engaged", # PowerSaving?
+            "HdrControl":"off",
+            "MaxUserStreamTimeLimit":1800,
+            "MaxMotionStreamTimeLimit":120,
+            "VideoMode":"superWide",
+            "JPEGOutputResolution":"",
+            "ChargeNotificationLed":0,
+            "AudioMicAGC":0,
+            "VideoOutputResolution":"1080p",
+            "VideoTargetBitrate":1000,
+            "Audio0EncodeFormat":0,
+            "Audio1EncodeFormat":1,
+            "ArloSmart":True,
+            "AlertBackoffTime":0
+            }
+        }
+
 RESPONSE = {
         "Type":"response",
         "ID":-1,
         "Response":"Ack"
+        }
+
+ACTIVITY_ZONE = {
+        "Type":"motionZone",
+        "ID":-1,
+        "intrZone":[
+                {
+                    "name":"Zone 2",
+                    "id":"5461bdfe-ab83-4b58-8325-848dd2c30dda",
+                    "coords":[{"x":0.264449,"y":0.3},{"x":0.864449,"y":0.3},{"x":0.864449,"y":1},{"x":0.264449,"y":1}],
+                    "color":41210
+                }
+            ]
+        }
+ACTIVITY_ZONE_ALL = {
+        "Type":"motionZone",
+        "ID":-1,
+        "intrZone":[
+            {
+                "name":"Zone 3",
+                "id":"2d10c7b1-72c7-4a42-8500-f75dbbbc860d",
+                "coords":[{"x":0.1,"y":0.1},{"x":0.7,"y":0.1},{"x":0.7,"y":0.8},{"x":0.1,"y":0.8}],
+                "color":15790130
+                },
+            {
+                "name":"Zone 2",
+                "id":"4a9b190b-eae2-49eb-93f8-3e924f13a179",
+                "coords":[{"x":0.1,"y":0.1},{"x":0.7,"y":0.1},{"x":0.7,"y":0.8},{"x":0.1,"y":0.8}],
+                "color":41210
+                },
+            {
+                "name":"Zone 1",
+                "id":"e8c8412d-5700-4567-9709-84c8b6bcd893",
+                "coords":[{"x":0.1,"y":0.1},{"x":0.7,"y":0.1},{"x":0.7,"y":0.8},{"x":0.1,"y":0.8}],
+                "color":8524960
+                }
+            ]
+        }
+
+ACTIVITY_ZONE_DELETE = {
+        "Type":"motionZone",
+        "ID":-1,
+        "intrZone":[]
         }
