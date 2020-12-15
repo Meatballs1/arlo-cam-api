@@ -31,7 +31,41 @@ wpa_cli -i wlan0 wps_pbc
 If successful the wpa.conf should contain the WPA-PSK and you can configure your own wireless network
 with the same ESSID and key.
 
+# Install
+
+```
+sudo apt install -y python3-pip vlc
+pip3 install -r requirements.txt
+```
+
 # Work In Progress
+
+## Pairing a camera to your own basestation
+
+The cameras seem fairly happy to connect to any basestation when they the 'Sync' button is pressed. With hostapd the following configuration was used:
+
+```
+beacon_int=100
+ssid=${SSID}
+interface=${WIFI_IFACE}
+driver=${DRIVER}
+channel=${CHANNEL}
+ctrl_interface=$CONFDIR/hostapd_ctrl
+ctrl_interface_group=0
+ap_isolate=$ISOLATE_CLIENTS
+eap_server=1
+wps_pin_requests=/var/run/hostapd.pin-req
+config_methods=label display push_button keypad
+wps_state=2
+ap_setup_locked=1
+ieee80211n=1
+```
+
+PBC can be activated using:
+
+```
+hostapd_cli wps_pbc
+```
 
 ## Video recording
 
