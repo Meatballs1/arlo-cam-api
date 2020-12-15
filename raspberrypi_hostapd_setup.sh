@@ -11,6 +11,11 @@ DEBIAN_FRONTEND=noninteractive apt install -y hostapd dnsmasq netfilter-persiste
 systemctl unmask hostapd
 systemctl enable hostapd
 
+useradd arlo -m -r -s /usr/sbin/nologin
+cp -r ../arlo-cam-api/ /opt/arlo-cam-api
+chown -R arlo:arlo /opt/arlo-cam-api
+sudo -u arlo pip3 install -r /opt/arlo-cam-api/requirements.txt
+
 echo net.ipv4.ip_forward=1 > /etc/sysctl.d/routed-ap.conf
 
 cat << EOF >> /etc/dhcpcd.conf
@@ -32,6 +37,7 @@ rfkill unblock wlan
 cat << EOF > /etc/hostapd/hostapd.conf
 country_code=GB
 interface=wlan0
+ctrl_interface_group=0
 ssid=$SSID
 hw_mode=g
 channel=11
@@ -54,11 +60,50 @@ EOF
 
 cat << EOF > /etc/iptables/rules.v4
 *filter
-:INPUT ACCEPT [0:0]
-:FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
+:INPUT DROP [731:160138]
+:FORWARD DROP [49:5435]
+:OUTPUT ACCEPT [194:17010]
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
 -A INPUT -i eth0 -p tcp -m tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 5000 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+-A INPUT -i wlan0 -p tcp -m tcp --dport 4000 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+-A INPUT -i wlan0 -p udp -m udp --dport 67 -j ACCEPT
+-A INPUT -i wlan0 -p udp -m udp --dport 53 -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -p icmp -j ACCEPT
+-A FORWARD -i eth0 -p tcp -m tcp --dport 554 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+-A FORWARD -i wlan0 -p tcp -m tcp --sport 554 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i wlan0 -p udp -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+-A OUTPUT -p icmp -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 554 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 5000 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 4000 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+-A OUTPUT -p udp -m udp --sport 53 -j ACCEPT
+-A OUTPUT -p udp -m udp --sport 67 -j ACCEPT
+-A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
 COMMIT
+
 EOF
 
+cat << EOF > /lib/systemd/system/arlo.service
+[Unit]
+Description=Arlo Control Service
+After=multi-user.target
+StartLimitIntervalSec=
+
+[Service]
+WorkingDirectory=/opt/arlo-cam-api/
+User=arlo
+Type=idle
+ExecStart=/usr/bin/python3 /opt/arlo-cam-api/server.py
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+echo "Now sudo reboot..."
