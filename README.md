@@ -79,6 +79,7 @@ ssid=NETGEAR07
 interface=wlan0
 channel=1
 ctrl_interface=/var/run/hostapd
+wpa_passphrase=YOUR_PSK_HERE
 ctrl_interface_group=0
 eap_server=1
 wps_pin_requests=/var/run/hostapd.pin-req
