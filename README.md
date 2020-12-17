@@ -75,13 +75,11 @@ The cameras seem fairly happy to connect to any basestation when they the 'Sync'
 
 ```
 beacon_int=100
-ssid=${SSID}
-interface=${WIFI_IFACE}
-driver=${DRIVER}
-channel=${CHANNEL}
-ctrl_interface=$CONFDIR/hostapd_ctrl
+ssid=NETGEAR07
+interface=wlan0
+channel=1
+ctrl_interface=/var/run/hostapd
 ctrl_interface_group=0
-ap_isolate=$ISOLATE_CLIENTS
 eap_server=1
 wps_pin_requests=/var/run/hostapd.pin-req
 config_methods=label display push_button keypad
