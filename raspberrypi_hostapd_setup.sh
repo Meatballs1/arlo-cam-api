@@ -37,13 +37,13 @@ rfkill unblock wlan
 cat << EOF > /etc/hostapd/hostapd.conf
 country_code=GB
 interface=wlan0
+ctrl_interface=/var/run/hostapd
 ctrl_interface_group=0
 ssid=$SSID
 hw_mode=g
 channel=11
 macaddr_acl=0
 auth_algs=1
-ignore_broadcast_ssid=0
 wpa=2
 wpa_passphrase=$WPA_PSK
 wpa_key_mgmt=WPA-PSK
@@ -55,7 +55,7 @@ wps_state=2
 ap_setup_locked=1
 ieee80211n=1
 wps_pin_requests=/var/run/hostapd.pin-req
-ignore_broadcast_ssid=1
+ignore_broadcast_ssid=0
 EOF
 
 cat << EOF > /etc/iptables/rules.v4
