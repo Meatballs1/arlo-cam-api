@@ -132,6 +132,7 @@ class Camera:
         return self.send_message(register_set)
 
     def record(self, duration):
+        status_request() # Cameras tend to be unresponsive so send a status request to wake up
         timestr = time.strftime("%Y%m%d-%H%M%S")
         path = f"/tmp/{self.serial_number}{timestr}-user.mpg", duration
         recorder = Recorder(self.ip, f"/tmp/{self.serial_number}_{timestr}_user.mpg", duration)
