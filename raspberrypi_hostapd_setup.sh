@@ -20,16 +20,16 @@ echo net.ipv4.ip_forward=1 > /etc/sysctl.d/routed-ap.conf
 
 cat << EOF >> /etc/dhcpcd.conf
 interface wlan0
-    static ip_address=10.14.0.1/24
-    static routers=10.14.0.1
+    static ip_address=172.14.0.1/24
+    static routers=172.14.0.1
     nohook wpa_supplicant
 EOF
 
 cat << EOF > tee /etc/dnsmasq.conf
 interface=wlan0
-dhcp-range=10.14.0.100,10.14.0.199,255.255.255.0,24h
+dhcp-range=172.14.0.100,10.14.0.199,255.255.255.0,24h
 domain=arlo
-address=/gateway.arlo/10.14.0.1
+address=/gateway.arlo/172.14.0.1
 EOF
 
 rfkill unblock wlan
