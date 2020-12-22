@@ -160,17 +160,17 @@ def set_activity_zones(serial):
 @app.route('/snapshot/<identifier>/', methods=['POST'])
 def receive_snapshot(identifier):
     if 'file' not in flask.request.files:
-        abort(400)
+        flask.abort(400)
     else:
         file = flask.request.files['file']
         if file.filename=='':
-            abort(400)
+            flask.abort(400)
         else:
             start_path = os.path.abspath('/tmp')
             target_path = os.path.join(start_path,f"{identifier}.jpg")
             common_prefix = os.path.commonprefix([target_path, start_path])
             if (common_prefix != start_path):
-                abort(400)
+                flask.abort(400)
             else:
                 file.save(target_path)
             return ""
