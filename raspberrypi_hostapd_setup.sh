@@ -21,7 +21,7 @@ echo net.ipv4.ip_forward=1 > /etc/sysctl.d/routed-ap.conf
 cat << EOF >> /etc/dhcpcd.conf
 interface wlan0
     static ip_address=10.14.0.1/24
-    static routers=192.168.4.1
+    static routers=10.14.0.1
     nohook wpa_supplicant
 EOF
 
