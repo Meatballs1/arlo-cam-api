@@ -21,6 +21,8 @@ sudo apt install -y python3-pip vlc
 pip3 install -r requirements.txt
 ```
 
+There is also a script to setup the Pi with hostapd/dnsmasq and configure the server within systemd. Should work well on a fresh Raspberry Pi - remember to chagne the PSK first.
+
 # Run
 
 ```
