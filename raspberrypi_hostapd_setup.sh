@@ -27,7 +27,7 @@ EOF
 
 cat << EOF > tee /etc/dnsmasq.conf
 interface=wlan0
-dhcp-range=172.14.0.100,10.14.0.199,255.255.255.0,24h
+dhcp-range=172.14.0.100,172.14.0.199,255.255.255.0,infinite
 domain=arlo
 address=/gateway.arlo/172.14.0.1
 EOF
