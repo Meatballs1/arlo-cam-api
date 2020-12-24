@@ -1,5 +1,7 @@
 MotionRecordingTimeout: 120
 AudioRecordingTimeout: 10
+RecordOnMotionAlert: false
+RecordOnAudioAlert: false
 RecordingBasePath: "/tmp/"
 MotionRecordingWebHookUrl: "http://httpbin.org/anything"
 AudioRecordingWebHookUrl: "http://httpbin.org/anything"

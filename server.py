@@ -35,6 +35,8 @@ recorders = {}
 MOTION_RECORDING_TIMEOUT=config['MotionRecordingTimeout']
 AUDIO_RECORDING_TIMEOUT=config['AudioRecordingTimeout']
 RECORDING_BASE_PATH=config['RecordingBasePath']
+RECORD_ON_MOTION_ALERT=config['RecordOnMotionAlert']
+RECORD_ON_AUDIO_ALERT=config['RecordOnAudioAlert']
 
 class ConnectionThread(threading.Thread):
     def __init__(self,connection,ip,port):
@@ -70,7 +72,7 @@ class ConnectionThread(threading.Thread):
                     camera = Camera.from_db_ip(self.ip)
                     alert_type = msg['AlertType']
                     s_print(f"<[{self.ip}][{msg['ID']}] {msg['AlertType']}")
-                    if alert_type == "pirMotionAlert":
+                    if alert_type == "pirMotionAlert" and RECORD_ON_MOTION_ALERT:
                        filename = f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_motion.mpg"
                        recorder = Recorder(self.ip, filename, MOTION_RECORDING_TIMEOUT)
                        with recorder_lock:
@@ -79,7 +81,7 @@ class ConnectionThread(threading.Thread):
                            recorders[self.ip] = recorder
                        recorder.run()
                        webhook_manager.motion_detected(camera.ip,camera.friendly_name,camera.hostname,camera.serial_number,msg['PIRMotion']['zones'],filename)
-                    elif alert_type == "audioAlert":
+                    elif alert_type == "audioAlert" and RECORD_ON_AUDIO_ALERT:
                        recorder = Recorder(self.ip, f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_audio.mpg", AUDIO_RECORDING_TIMEOUT)
                        with recorder_lock:
                            if self.ip in recorders:
@@ -88,8 +90,9 @@ class ConnectionThread(threading.Thread):
                        recorder.run()
                     elif alert_type == "motionTimeoutAlert":
                        with recorder_lock:
-                           recorders[self.ip].stop()
-                           del recorders[self.ip]
+                           if recorders[self.ip] is not None:
+                               recorders[self.ip].stop()
+                               del recorders[self.ip]
                 else:
                     s_print(f"<[{self.ip}][{msg['ID']}] Unknown message")
                     s_print(msg)
