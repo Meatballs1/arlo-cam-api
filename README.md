@@ -100,11 +100,15 @@ hostapd_cli wps_pbc
 
 # Work In Progress
 
-## Video recording
+## Video streaming
 
 The FFmpeg library doesn't send RTCP Response Received messages very often, and the camera seems to timeout
 the stream, and force itself to reauth to the wifi if this happens. This means FFmpeg and dependent apps
 seem to kill the camera after about 6seconds. libVLC seems to work, also Live555 - openRTSP.
+
+Blocking ALL RTCP (by dropping all UDP) appears to allow FFMPEG to function, as the cameras dont mind if no RTCP
+responses are received. However, if the connection dies without a TEARDOWN from the client then the cameras may just
+keep sending RTP packets and may require a reboot as they don't know the client has disconnected.
 
 ## Audio streaming
 
