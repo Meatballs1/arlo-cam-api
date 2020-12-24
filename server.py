@@ -90,7 +90,7 @@ class ConnectionThread(threading.Thread):
                        recorder.run()
                     elif alert_type == "motionTimeoutAlert":
                        with recorder_lock:
-                           if recorders[self.ip] is not None:
+                           if self.ip in recorders and recorders[self.ip] is not None:
                                recorders[self.ip].stop()
                                del recorders[self.ip]
                 else:
