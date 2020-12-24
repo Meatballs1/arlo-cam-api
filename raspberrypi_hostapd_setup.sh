@@ -75,6 +75,7 @@ cat << EOF > /etc/iptables/rules.v4
 -A FORWARD -i eth0 -p tcp -m tcp --dport 554 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 -A FORWARD -i wlan0 -p tcp -m tcp --sport 554 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 -A FORWARD -i wlan0 -p udp -j ACCEPT
+-A FORWARD -i eth0 -p udp -j ACCEPT
 -A OUTPUT -o lo -j ACCEPT
 -A OUTPUT -p icmp -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
