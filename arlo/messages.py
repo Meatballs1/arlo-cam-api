@@ -35,16 +35,6 @@ class Message:
         else:
             return None
 
-    @staticmethod
-    def fromNetworkMessage(data):
-        if data.startswith("L:"):
-            delimiter = data.index(" ")
-            dataLength = int(data[2:delimiter])
-            json_data = data[delimiter+1:delimiter+1+dataLength]
-            return Message(json.loads(json_data))
-        else:
-            return None
-
 # ID is an incrementing number
 #FROM CAMERA
 REGISTRATION = {

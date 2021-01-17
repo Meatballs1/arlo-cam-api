@@ -2,8 +2,10 @@ import json
 import socket
 import sqlite3
 import time
+import sys
 
 from arlo.messages import Message
+from arlo.socket import ArloSocket
 import arlo.messages
 from helpers.safe_print import s_print
 from helpers.recorder import Recorder
@@ -23,25 +25,32 @@ class Camera:
 
     def send_message(self,message):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+
+            sock.settimeout(5.0)
+            try:
+                sock.connect((self.ip, 4000))
+            except OSError as msg:
+                print('Connection to camera failed: {msg}')
+                return False
+
             result = False
             try:
-                sock.settimeout(5.0)
-                sock.connect((self.ip, 4000))
+                arloSock = ArloSocket(sock)
                 self.id += 1
                 message['ID'] = self.id
                 s_print(f">[{self.ip}][{self.id}] {message['Type']}")
-                sock.sendall(message.toNetworkMessage())
-                data = sock.recv(1024)
-                if len(data) > 0:
-                    ack = Message.fromNetworkMessage(data.decode(encoding="utf-8"))
-                    if (ack != None):
-                        if (ack['ID']==message['ID']):
-                            if ('Response' in ack and ack['Response'] != "Ack"):
-                                s_print(f"<[{self.ip}][{self.id}] {ack['Response']}")
-                                result = False
-                            else:
-                                s_print(f"<[{self.ip}][{self.id}] Ack")
-                                result = True
+                arloSock.send(message)
+                ack = arloSock.receive()
+                if (ack != None):
+                    if (ack['ID']==message['ID']):
+                        if ('Response' in ack and ack['Response'] != "Ack"):
+                            s_print(f"<[{self.ip}][{self.id}] {ack['Response']}")
+                            result = False
+                        else:
+                            s_print(f"<[{self.ip}][{self.id}] Ack")
+                            result = True
+            except:
+                print(f'Exception: {sys.exc_info()}')
             finally:
                 return result
 
@@ -132,7 +141,7 @@ class Camera:
         return self.send_message(register_set)
 
     def record(self, duration):
-        status_request() # Cameras tend to be unresponsive so send a status request to wake up
+        self.status_request() # Cameras tend to be unresponsive so send a status request to wake up
         timestr = time.strftime("%Y%m%d-%H%M%S")
         path = f"/tmp/{self.serial_number}{timestr}-user.mpg", duration
         recorder = Recorder(self.ip, f"/tmp/{self.serial_number}_{timestr}_user.mpg", duration)

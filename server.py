@@ -7,6 +7,7 @@ import time
 import yaml
 
 from arlo.messages import Message
+from arlo.socket import ArloSocket
 import arlo.messages
 from arlo.camera import Camera
 from helpers.safe_print import s_print
@@ -41,17 +42,15 @@ RECORD_ON_AUDIO_ALERT=config['RecordOnAudioAlert']
 class ConnectionThread(threading.Thread):
     def __init__(self,connection,ip,port):
         threading.Thread.__init__(self)
-        self.connection = connection
+        self.connection = ArloSocket(connection)
         self.ip = ip
         self.port = port
-    
+
     def run(self):
         while True:
             timestr = time.strftime("%Y%m%d-%H%M%S")
-            data = self.connection.recv(1024)
-            if len(data) > 0:
-                msg = Message.fromNetworkMessage(data.decode(encoding="utf-8"))
-
+            msg = self.connection.receive()
+            if msg != None:
                 if (msg['Type'] == "registration"):
                     camera = Camera.from_db_serial(msg['SystemSerialNumber'])
                     if camera is None:
@@ -100,7 +99,7 @@ class ConnectionThread(threading.Thread):
                 ack = Message(arlo.messages.RESPONSE)
                 ack['ID'] = msg['ID']
                 s_print(f">[{self.ip}][{msg['ID']}] Ack")
-                self.connection.sendall(ack.toNetworkMessage())
+                self.connection.send(ack)
                 self.connection.close()
                 break
 
