@@ -87,16 +87,21 @@ class Camera:
         quality = args["quality"].lower()
         if quality == "low":
             ra_params = Message(arlo.messages.RA_PARAMS_LOW_QUALITY)
+            registerSet = Message(arlo.messages.REGISTER_SET_LOW_QUALITY)
         elif quality == "medium":
             ra_params = Message(arlo.messages.RA_PARAMS_MEDIUM_QUALITY)
+            registerSet = Message(arlo.messages.REGISTER_SET_MEDIUM_QUALITY)
         elif quality == "high":
             ra_params = Message(arlo.messages.RA_PARAMS_HIGH_QUALITY)
+            registerSet = Message(arlo.messages.REGISTER_SET_HIGH_QUALITY)
         elif quality == "subscription":
             ra_params = Message(arlo.messages.RA_PARAMS_SUBSCRIPTION_QUALITY)
+            registerSet = Message(arlo.messages.REGISTER_SET_SUBSCRIPTION_QUALITY)
         else:
             return False
 
-        return self.send_message(ra_params)
+        return self.send_message(ra_params) and self.send_message(registerSet)
+
 
     def arm(self,args):
         register_set = Message(arlo.messages.REGISTER_SET)
@@ -140,11 +145,15 @@ class Camera:
         register_set['AudioSpkrEnable'] = enabled
         return self.send_message(register_set)
 
-    def record(self, duration):
+    def record(self, duration, is4k):
         self.status_request() # Cameras tend to be unresponsive so send a status request to wake up
         timestr = time.strftime("%Y%m%d-%H%M%S")
         path = f"/tmp/{self.serial_number}{timestr}-user.mpg", duration
-        recorder = Recorder(self.ip, f"/tmp/{self.serial_number}_{timestr}_user.mpg", duration)
+        if is4k:
+            addr = f'{self.ip}:555'
+        else:
+            addr = f'{self.ip}:554'
+        recorder = Recorder(addr, path, duration)
         recorder.run()
         return path
 

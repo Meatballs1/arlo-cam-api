@@ -133,7 +133,7 @@ def request_record(serial):
     if g.args['duration'] is None:
         flask.abort(400)
     else:
-        result = g.camera.record(g.args['duration'])
+        result = g.camera.record(g.args['duration'], g.args['is4k'])
         return flask.jsonify({"result":result})
 
 @app.route('/camera/<serial>/friendlyname', methods=['POST'])

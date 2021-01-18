@@ -298,6 +298,15 @@ RA_PARAMS_LOW_QUALITY = {
                 "targetbps":409600,
                 "cbrbps":409600
                 },
+            "4K": {
+                "minbps": 307200,
+                "maxbps": 2048000,
+                "minQP": 26,
+                "maxQP": 38,
+                "vbr": True,
+                "targetbps": 1024000,
+                "cbrbps": 1024000
+            },
             "360p":{
                 "minbps":51200,
                 "maxbps":307200,
@@ -341,6 +350,15 @@ RA_PARAMS_MEDIUM_QUALITY = {
                 "targetbps":512000,
                 "cbrbps":512000
                 },
+            "4K": {
+                "minbps": 307200,
+                "maxbps": 3072000,
+                "minQP": 26,
+                "maxQP": 38,
+                "vbr": True,
+                "targetbps": 1536000,
+                "cbrbps": 2048000
+            },
             "360p":{
                 "minbps":51200,
                 "maxbps":409600,
@@ -384,6 +402,15 @@ RA_PARAMS_HIGH_QUALITY = {
                 "targetbps":614400,
                 "cbrbps":614400
                 },
+            "4K": {
+                "minbps": 307200,
+                "maxbps": 5120000,
+                "minQP": 26,
+                "maxQP": 38,
+                "vbr": True,
+                "targetbps": 3072000,
+                "cbrbps": 3072000
+            },
             "360p":{
                 "minbps":51200,
                 "maxbps":512000,
@@ -427,15 +454,18 @@ RA_PARAMS_SUBSCRIPTION_QUALITY = {
                 "targetbps":1024000,
                 "cbrbps":1024000
                 },
-            "360p":{
-                "minbps":51200,
-                "maxbps":512000,
-                "minQP":24,
-                "maxQP":38,
-                "vbr":True,
-                "targetbps":409600,
-                "cbrbps":409600
-                },
+            # I'm not sure what subscription quality is
+            # but I'm using it as a playground to see
+            # what's the highest quality video I can get
+            "4K": {
+                "minbps": 307200,
+                "maxbps": 10240000,
+                "minQP": 1,
+                "maxQP": 1,
+                "vbr": False,
+                "targetbps": 10240000,
+                "cbrbps": 10240000
+            },
             "480p":{
                 "minbps":51200,
                 "maxbps":614400,
@@ -529,6 +559,50 @@ REGISTER_SET_ARM_AUDIO = {
             }
         }
 
+REGISTER_SET_LOW_QUALITY = {
+    "Type":"registerSet",
+    "ID":-1,
+    "SetValues":{
+        "VideoOutputResolution": "720p",
+        "VideoTargetBitrate": 400,
+        "HEVCVideoOutputResolution": "2160p",
+        "HEVCVideoTargetBitrate": 1000,
+    }
+}
+
+REGISTER_SET_MEDIUM_QUALITY = {
+    "Type":"registerSet",
+    "ID":-1,
+    "SetValues":{
+        "VideoOutputResolution": "1080p",
+        "VideoTargetBitrate": 600,
+        "HEVCVideoOutputResolution": "2160p",
+        "HEVCVideoTargetBitrate": 1500,
+    }
+}
+
+REGISTER_SET_HIGH_QUALITY = {
+    "Type":"registerSet",
+    "ID":-1,
+    "SetValues":{
+        "VideoOutputResolution": "1080p",
+        "VideoTargetBitrate": 1250,
+        "HEVCVideoOutputResolution": "2160p",
+        "HEVCVideoTargetBitrate": 3000,
+    }
+}
+
+REGISTER_SET_SUBSCRIPTION_QUALITY = {
+    "Type":"registerSet",
+    "ID":-1,
+    "SetValues":{
+        "VideoOutputResolution": "1080p",
+        "VideoTargetBitrate": 1250,
+        "HEVCVideoOutputResolution": "2160p",
+        "HEVCVideoTargetBitrate": 6000,
+    }
+}
+
 REGISTER_SET_INITIAL = {
         "Type":"registerSet",
         "ID":-1,
@@ -566,6 +640,52 @@ REGISTER_SET_INITIAL = {
                 "DefaultMotionStreamTimeLimit":10
                 }
         }
+
+# Register set specific to the Arlo Ultra
+REGISTER_SET_INITIAL_ULTRA = {
+        "Type":"registerSet",
+        "ID":-1,
+        "SetValues":{
+            "VideoExposureCompensation": 0,
+            "VideoMirror": False,
+            "VideoFlip": False,
+            "VideoWindowStartX": 0,
+            "VideoWindowStartY": 0,
+            "VideoWindowEndX": 1280,
+            "VideoWindowEndY": 720,
+            "MaxMissedBeaconTime": 10,
+            "MaxStreamTimeLimit": 1800,
+            "VideoAntiFlickerRate": 50,
+            "WifiCountryCode": "FR",
+            "NightVisionMode": False,
+            "IRLedState": "off",
+            "IRCutState": "engaged",
+            "HdrControl": "auto",
+            "MaxUserStreamTimeLimit": 1800,
+            "MaxMotionStreamTimeLimit": 120,
+            "VideoMode": "superWide",
+            "JPEGOutputResolution": "360p",
+            "EpochBsTime": 1610925182,
+            "ChargeNotificationLed": 1,
+            "AudioMicAGC": 0,
+            "NightModeLightSourceAlert": 1,
+            "SpotlightModeAlert": 0,
+            "SpotlightIntensityAlert": 100,
+            "NightModeGrey": 0,
+            "AudioMicWNS": 0,
+            "VideoSmartZoom": "off",
+            "VideoOutputResolution": "1080p",
+            "VideoTargetBitrate": 1250,
+            "HEVCVideoOutputResolution": "2160p",
+            "HEVCVideoTargetBitrate": 3000,
+            "MaxSensorRequired": True,
+            "Audio0EncodeFormat": 0,
+            "Audio1EncodeFormat": 1,
+            "ArloSmart": True,
+            "CvrModeEnabled": False,
+            "AlertBackoffTime": 0
+        }
+}
 
 REGISTER_SET_INITIAL_SUBSCRIPTION = {
         "Type":"registerSet",

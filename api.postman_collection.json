@@ -365,7 +365,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"duration\":10}",
+					"raw": "{\"duration\":10,\"is4k\":False}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -59,7 +59,10 @@ class ConnectionThread(threading.Thread):
                         camera.registration = msg
                     camera.persist()
                     s_print(f"<[{self.ip}][{msg['ID']}] Registration from {msg['SystemSerialNumber']} - {camera.hostname}")
-                    registerSet = Message(arlo.messages.REGISTER_SET_INITIAL)
+                    if msg['SystemModelNumber'] ==  'VMC5040':
+                        registerSet = Message(arlo.messages.REGISTER_SET_INITIAL_ULTRA)
+                    else:
+                        registerSet = Message(arlo.messages.REGISTER_SET_INITIAL)
                     camera.send_message(registerSet)
                 elif (msg['Type'] == "status"):
                     s_print(f"<[{self.ip}][{msg['ID']}] Status from {msg['SystemSerialNumber']}")
