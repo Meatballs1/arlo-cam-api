@@ -441,6 +441,8 @@ RA_PARAMS_HIGH_QUALITY = {
             }
         }
 
+# Subscription quality is a slightly higher quality observed
+# when ArloSmart subscription was enabled.
 RA_PARAMS_SUBSCRIPTION_QUALITY = {
         "Type":"raParams",
         "ID":-1,
@@ -454,9 +456,6 @@ RA_PARAMS_SUBSCRIPTION_QUALITY = {
                 "targetbps":1024000,
                 "cbrbps":1024000
                 },
-            # I'm not sure what subscription quality is
-            # but I'm using it as a playground to see
-            # what's the highest quality video I can get
             "4K": {
                 "minbps": 307200,
                 "maxbps": 10240000,
