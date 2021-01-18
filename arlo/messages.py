@@ -466,6 +466,15 @@ RA_PARAMS_SUBSCRIPTION_QUALITY = {
                 "targetbps": 10240000,
                 "cbrbps": 10240000
             },
+            "360p":{
+                "minbps":51200,
+                "maxbps":512000,
+                "minQP":24,
+                "maxQP":38,
+                "vbr":True,
+                "targetbps":409600,
+                "cbrbps":409600
+                },
             "480p":{
                 "minbps":51200,
                 "maxbps":614400,
