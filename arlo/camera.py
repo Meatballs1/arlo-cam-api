@@ -147,6 +147,7 @@ class Camera:
 
     def record(self, duration, is4k):
         self.status_request() # Cameras tend to be unresponsive so send a status request to wake up
+        time.sleep(0.1)
         timestr = time.strftime("%Y%m%d-%H%M%S")
         path = f"/tmp/{self.serial_number}{timestr}-user.mpg", duration
         if is4k:
