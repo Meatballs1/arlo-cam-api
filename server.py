@@ -33,6 +33,7 @@ recorder_lock = threading.Lock()
 recorders = {}
 
 
+WIFI_COUNTRY_CODE=config['WifiCountryCode']
 MOTION_RECORDING_TIMEOUT=config['MotionRecordingTimeout']
 AUDIO_RECORDING_TIMEOUT=config['AudioRecordingTimeout']
 RECORDING_BASE_PATH=config['RecordingBasePath']
@@ -63,6 +64,7 @@ class ConnectionThread(threading.Thread):
                         registerSet = Message(arlo.messages.REGISTER_SET_INITIAL_ULTRA)
                     else:
                         registerSet = Message(arlo.messages.REGISTER_SET_INITIAL)
+                    registerSet['WifiCountryCode'] = WIFI_COUNTRY_CODE
                     camera.send_message(registerSet)
                 elif (msg['Type'] == "status"):
                     s_print(f"<[{self.ip}][{msg['ID']}] Status from {msg['SystemSerialNumber']}")

@@ -1,3 +1,4 @@
+WifiCountryCode: "EU"
 MotionRecordingTimeout: 120
 AudioRecordingTimeout: 10
 RecordOnMotionAlert: false
