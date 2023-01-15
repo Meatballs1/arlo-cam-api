@@ -98,6 +98,17 @@ PBC can be activated using:
 hostapd_cli wps_pbc
 ```
 
+### Connecting the cameras without a Raspberry Pi
+
+It is also possible to pair the cameras to your existing WiFi network. The camera's expect the Base Station server software to running on port 4000 on the  default gateway passed from the DHCP server. Assuming you are not running this software on your router, you'll need a way to redirect the cameras requests to another host.
+
+Below are two ways to do that:
+
+- Add a static lease to your DCHP server that also sets the default gateway to the host running this software (recommended) 
+- Create a port forward on port 4000 the LAN side of your router to redirect traffic to the host where this software is running.
+
+
+
 # Work In Progress
 
 ## Video streaming
