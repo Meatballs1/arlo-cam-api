@@ -66,32 +66,41 @@ class ConnectionThread(threading.Thread):
                         registerSet = Message(arlo.messages.REGISTER_SET_INITIAL)
                     registerSet['WifiCountryCode'] = WIFI_COUNTRY_CODE
                     camera.send_message(registerSet)
+                    webhook_manager.camera_registered(camera.ip, camera.friendly_name, camera.hostname, camera.serial_number, msg.dictionary)
                 elif (msg['Type'] == "status"):
                     s_print(f"<[{self.ip}][{msg['ID']}] Status from {msg['SystemSerialNumber']}")
                     camera = Camera.from_db_serial(msg['SystemSerialNumber'])
                     camera.ip = self.ip
                     camera.status = msg
                     camera.persist()
+                    webhook_manager.status_updated(camera.ip, camera.friendly_name, camera.hostname, camera.serial_number, msg.dictionary)
                 elif (msg['Type'] == "alert"):
                     camera = Camera.from_db_ip(self.ip)
                     alert_type = msg['AlertType']
                     s_print(f"<[{self.ip}][{msg['ID']}] {msg['AlertType']}")
-                    if alert_type == "pirMotionAlert" and RECORD_ON_MOTION_ALERT:
-                       filename = f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_motion.mpg"
-                       recorder = Recorder(self.ip, filename, MOTION_RECORDING_TIMEOUT)
-                       with recorder_lock:
-                           if self.ip in recorders:
-                               recorder[self.ip].stop()
-                           recorders[self.ip] = recorder
-                       recorder.run()
-                       webhook_manager.motion_detected(camera.ip,camera.friendly_name,camera.hostname,camera.serial_number,msg['PIRMotion']['zones'],filename)
-                    elif alert_type == "audioAlert" and RECORD_ON_AUDIO_ALERT:
-                       recorder = Recorder(self.ip, f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_audio.mpg", AUDIO_RECORDING_TIMEOUT)
-                       with recorder_lock:
-                           if self.ip in recorders:
-                               recorder[self.ip].stop()
-                           recorders[self.ip] = recorder
-                       recorder.run()
+                    if alert_type == "pirMotionAlert":
+                       filename = None
+                       if RECORD_ON_MOTION_ALERT:
+                           filename = f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_motion.mpg"
+                           recorder = Recorder(self.ip, filename, MOTION_RECORDING_TIMEOUT)
+                           with recorder_lock:
+                               if self.ip in recorders:
+                                   recorders[self.ip].stop()
+                               recorders[self.ip] = recorder
+                           recorder.run()
+                       zone = msg.dictionary.get('PIRMotion', {}).get('zones')
+                       webhook_manager.motion_detected(camera.ip,camera.friendly_name,camera.hostname,camera.serial_number,zone,filename)
+                    elif alert_type == "audioAlert":
+                       filename = None
+                       if RECORD_ON_AUDIO_ALERT:
+                           filename = f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_audio.mpg"
+                           recorder = Recorder(self.ip, filename, AUDIO_RECORDING_TIMEOUT)
+                           with recorder_lock:
+                               if self.ip in recorders:
+                                   recorders[self.ip].stop()
+                               recorders[self.ip] = recorder
+                           recorder.run()
+                       webhook_manager.audio_detected(camera.ip,camera.friendly_name,camera.hostname,camera.serial_number,filename)
                     elif alert_type == "motionTimeoutAlert":
                        with recorder_lock:
                            if self.ip in recorders and recorders[self.ip] is not None:

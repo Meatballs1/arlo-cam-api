@@ -36,7 +36,22 @@ contains all of the functioning endpoints to import into Postman.
 
 # Webhooks
 
-I've put a basic webhook in to trigger when motion is detected. This needs further work to capture more events.
+The server fires a webhook for each of the events configured in `config.yaml`. Every payload
+includes an `event` field so a single endpoint can tell them apart:
+
+| Event | Config key | Fired when |
+|-------|------------|------------|
+| `motion` | `MotionRecordingWebHookUrl` | A camera sends a PIR motion alert |
+| `audio` | `AudioRecordingWebHookUrl` | A camera sends an audio alert |
+| `registration` | `RegistrationWebHookUrl` | A camera registers with the base station |
+| `status` | `StatusUpdateWebHookUrl` | A camera sends a status update |
+
+The `motion` and `audio` webhooks fire on the alert itself, independent of the
+`RecordOnMotionAlert` / `RecordOnAudioAlert` settings. When recording is enabled the payload's
+`file_name` points at the recording; otherwise it is omitted.
+
+Motion and status payloads also carry handy fields pulled from the camera message, such as
+`battery_percent`, `signal_strength` and (for status) `temperature` and `charging_state`.
 
 # Temperature Sensor
 
