@@ -29,6 +29,24 @@ There is also a script to setup the Pi with hostapd/dnsmasq and configure the se
 python3 server.py
 ```
 
+The dependencies now install on current Python (3.9+) and Raspberry Pi OS. The
+previously pinned Flask 1.1.2 / Werkzeug 1.0.1 stack fails to import on Python
+3.10+, which is why older setups could not run on a recent Pi.
+
+# Docker
+
+A Dockerfile and compose file are provided for running the server/API on a
+current system:
+
+```
+docker compose up -d --build
+```
+
+The container uses host networking so it can reach the cameras and receive their
+registration and RTP traffic. The Wi-Fi access point that the cameras associate
+with (hostapd/dnsmasq) is still configured on the host - see below. Edit
+`config.yaml` on the host and restart; it is mounted into the container.
+
 # API
 
 The service spins up a REST API on TCP port 5000. The api.postman_collection.json config

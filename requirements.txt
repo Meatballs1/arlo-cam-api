@@ -1,18 +1,8 @@
-cached-property==1.5.2
-certifi==2020.11.8
-chardet==3.0.4
-click==7.1.2
-Flask==1.1.2
-idna==2.10
-itsdangerous==1.1.0
-Jinja2==2.11.2
-MarkupSafe==1.1.1
-pyaml==20.4.0
-python-vlc==3.0.11115
-PyYAML==5.3.1
-requests==2.25.0
-standardjson==0.3.1
-urllib3==1.26.2
-webhooks==0.4.2
-Werkzeug==1.0.1
-wrapt==1.12.1
+# Direct dependencies. Version ranges so the project installs on current
+# Python (3.9+) and Raspberry Pi OS; the old pinned Flask 1.1.2 / Werkzeug 1.0.1
+# stack fails to import on Python 3.10+ (collections.abc move).
+Flask>=2.2,<4
+PyYAML>=6.0
+python-vlc>=3.0.18121
+requests>=2.28
+webhooks>=0.4.2

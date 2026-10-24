@@ -1,0 +1,14 @@
+services:
+  arlo-cam-api:
+    build: .
+    # Host networking so the server can reach cameras on the LAN and receive
+    # their registration and RTP traffic directly. The Wi-Fi access point
+    # (hostapd/dnsmasq) that the cameras associate with is still configured on
+    # the host - see the README.
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      # Edit config.yaml on the host without rebuilding the image.
+      - ./config.yaml:/app/config.yaml:ro
+      # Uncomment and set RecordingBasePath to /recordings/ to keep recordings.
+      # - ./recordings:/recordings

@@ -21,7 +21,7 @@ def validate_camera_request(body_required=True):
                 flask.abort(404)
 
             if body_required:
-                g.args = flask.request.get_json()
+                g.args = flask.request.get_json(silent=True)
                 if g.args is None:
                     flask.abort(400)
 
@@ -177,4 +177,9 @@ def receive_snapshot(identifier):
 
 
 def get_thread():
-    return threading.Thread(target=app.run(host='0.0.0.0'))
+    # Run the Flask API on its own thread and return it. Previously this called
+    # app.run(...) inside the Thread() constructor, so Flask ran in the calling
+    # thread (blocking) and the Thread was created with target=None.
+    thread = threading.Thread(target=app.run, kwargs={"host": "0.0.0.0"}, daemon=True)
+    thread.start()
+    return thread
