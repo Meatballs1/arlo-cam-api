@@ -110,6 +110,30 @@ Blocking ALL RTCP (by dropping all UDP) appears to allow FFMPEG to function, as 
 responses are received. However, if the connection dies without a TEARDOWN from the client then the cameras may just
 keep sending RTP packets and may require a reboot as they don't know the client has disconnected.
 
+See `rtcp_proxy.py` below for a self-contained alternative that keeps the camera happy without having to
+drop RTCP across the whole network.
+
+# RTCP Keepalive Proxy
+
+`rtcp_proxy.py` works around the FFmpeg problem instead of dropping RTCP network-wide. It owns the
+RTSP/UDP session with the camera itself, sends it RTCP Receiver Reports on a steady cadence (see
+`arlo/rtcp.py`, a dependency-free RFC 3550 implementation), and relays the raw RTP to a local UDP port
+that any FFmpeg-based consumer can read:
+
+```
+python3 rtcp_proxy.py rtsp://192.168.1.194/live --relay 127.0.0.1:5600
+```
+
+Point FFmpeg at a small SDP file describing the relayed stream:
+
+```
+ffmpeg -protocol_whitelist file,udp,rtp -i stream.sdp -c copy out.mp4
+```
+
+Because the proxy sends a TEARDOWN when it stops, the camera learns the client has gone and does not get
+stuck streaming. The RTCP logic in `arlo/rtcp.py` is unit tested (`python3 -m pytest tests/`); the live
+RTSP handshake still benefits from validation against your own cameras.
+
 ## Audio streaming
 
 The UDP port 5000 on the cameras constantly listens for RTP traffic with the following encoding:
