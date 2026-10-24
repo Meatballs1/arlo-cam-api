@@ -81,7 +81,7 @@ class ConnectionThread(threading.Thread):
                        recorder = Recorder(self.ip, filename, MOTION_RECORDING_TIMEOUT)
                        with recorder_lock:
                            if self.ip in recorders:
-                               recorder[self.ip].stop()
+                               recorders[self.ip].stop()
                            recorders[self.ip] = recorder
                        recorder.run()
                        webhook_manager.motion_detected(camera.ip,camera.friendly_name,camera.hostname,camera.serial_number,msg['PIRMotion']['zones'],filename)
@@ -89,7 +89,7 @@ class ConnectionThread(threading.Thread):
                        recorder = Recorder(self.ip, f"{RECORDING_BASE_PATH}{camera.serial_number}_{timestr}_audio.mpg", AUDIO_RECORDING_TIMEOUT)
                        with recorder_lock:
                            if self.ip in recorders:
-                               recorder[self.ip].stop()
+                               recorders[self.ip].stop()
                            recorders[self.ip] = recorder
                        recorder.run()
                     elif alert_type == "motionTimeoutAlert":
